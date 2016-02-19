@@ -1,0 +1,97 @@
+# just don't use these line
+# echo "first=$first"
+while [ 1 ]; do
+	compare=$(ls /dev/ | grep sd.)
+	# echo "compare=$compare"
+	diff=$(diff -u <(echo "$first") <(echo "$compare"))
+
+	# There is some differece, let's check
+	if [ "$diff" != "" ]; then
+		first=$(ls /dev/ | grep sd.)
+		compare=$(ls /dev/ | grep sd.)
+
+		# Check what's new
+		printf '%s\n' "$diff" | {
+			while IFS= read -r line; do
+				if [[ $line =~ [+]sd.[1-9] ]]; then
+					printf '%d. %s \r\n' "$count" "$line"
+					itemToMount=$line
+				fi
+			done
+			# Get interface user wants to mount
+			if [ $count -gt 0 ]; then
+				# Don't know why this block of code don't work as intended
+				# while [ 1 ]; do
+					# read -p "Choose what interface you want to mount:" interface
+					# if [ "${interface:-0}" -gt $count ]; then
+					# 	echo "Wrong input, choose again"
+					# else
+					# 	echo "You choose $interface"
+					# 	echo "Going to mount"
+					# 	exit 0
+					# fi
+				# done
+
+				# echo "$itemToMount"
+				# echo "${itemToMount//+}"
+				itemToMount="${itemToMount//+}"
+				# if [ -d "/media/usb" ]; then
+				# 	echo "/media/usb already exist, umount it first !"
+				# 	umount /media/usb
+				# fi
+
+				echo "Going to mount $itemToMount to /media/usb"
+				if [ ! -d "/media/usb" ]; then
+					mkdir /media/usb					
+				fi
+				mount "/dev/$itemToMount" /media/usb
+				echo "Copy $fileToCopy to /media/usb"
+				cp "$fileToCopy" /media/usb
+				sync
+				umount /media/usb
+
+				echo "Just plug out the usb, then plug it in again"
+				while [ -e "/dev/$itemToMount" ]; do
+					echo "Put your usb out"
+					sleep 1s
+				done
+
+				echo "Then plug your usb in again"
+				first=$(ls /dev/ | grep sd.)
+
+				while [ 1 ]; do
+					compare=$(ls /dev/ | grep sd.)
+					diff=$(diff -u <(echo "$first") <(echo "$compare"))
+					if [ "$diff" != "" ]; then
+
+					else
+						echo "Put your usb in"
+						sleep 1s
+					fi
+				done
+
+
+				while [ ! -e "/dev/$itemToMount" ]; do
+					echo "Put your usb in"
+					sleep 1s
+				done
+
+				diff=$(diff -u $1 /media/usb/$itemToMount)
+
+				if [ "$diff" == "" ]; then
+					if [ -f "/media/usb/$itemToMount" ]; then
+						echo "File exactly same, write successfully !"
+					else
+						echo "No file found, write or mount fail !"
+					fi
+				else
+					echo "File different, write fail !"
+				fi
+			fi
+		}
+
+		exit 0
+	fi
+	sleep 1s
+done
+echo $temp
