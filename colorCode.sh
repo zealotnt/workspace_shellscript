@@ -23,3 +23,8 @@ KUDLN="\033[4m"
 # Reset all settings of console print
 KRESET="\033[0m"
 KRBOLD="\033[21m"
+
+myPrint()
+{
+	echo -e $1	
+}
