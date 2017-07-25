@@ -12,11 +12,11 @@ if [ ! -e /dev/SD_DEV ]; then
 fi
 
 # We found sd card, mount all of them like the udev rule
-for SD_DEV_NUM in {1..9}
+for SD_PARTITION_NUM in {1..9}
 do
-	if [ -e /dev/$SD_PART_PREFIX$SD_DEV_NUM ]; then
-		echo "$HDR Detect $SD_PART_PREFIX$SD_DEV_NUM, mount to /media/$SD_MOUNT_PREFIX$SD_DEV_NUM"
-		mkdir -p /media/$SD_MOUNT_PREFIX$SD_DEV_NUM
-		mount -o relatime /dev/$SD_PART_PREFIX$SD_DEV_NUM /media/$SD_MOUNT_PREFIX$SD_DEV_NUM
+	if [ -e /dev/$SD_PART_PREFIX$SD_PARTITION_NUM ]; then
+		echo "$HDR Detect $SD_PART_PREFIX$SD_PARTITION_NUM, mount to /media/$SD_MOUNT_PREFIX$SD_PARTITION_NUM"
+		mkdir -p /media/$SD_MOUNT_PREFIX$SD_PARTITION_NUM
+		mount -o relatime /dev/$SD_PART_PREFIX$SD_PARTITION_NUM /media/$SD_MOUNT_PREFIX$SD_PARTITION_NUM
 	fi
 done
