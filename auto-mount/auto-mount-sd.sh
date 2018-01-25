@@ -6,7 +6,7 @@ SD_DEV="mmcblk1"
 SD_PART_PREFIX="${SD_DEV}p"
 SD_MOUNT_PREFIX="sd-$SD_PART_PREFIX"
 
-if [ ! -e /dev/SD_DEV ]; then
+if [ ! -e /dev/$SD_DEV ]; then
 	echo "$HDR No sdcard, suppose to do nothing"
 	exit 0
 fi
